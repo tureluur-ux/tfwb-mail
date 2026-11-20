@@ -40,10 +40,12 @@ De launcher is een echte Windows-desktopapp. Het mailvenster opent niet als
 los browservenster: de lokale webinterface wordt in een ingebouwd WebView2-
 venster getoond.
 
-1. zoekt automatisch naar een PHP-runtime met IMAP, SQLite en TLS;
-2. installeert PHP 8.3 stil via WinGet als dat ontbreekt;
-3. start de lokale mailservice op `127.0.0.1:8090`;
-4. opent één eigen tfwbmail-appvenster.
+1. controleert of PHP met IMAP/SQLite en WebView2 al geïnstalleerd zijn;
+2. toont bij ontbrekende onderdelen een installatie-widget met **Installeren**
+   of **Annuleren**;
+3. voert WinGet alleen uit nadat je op **Installeren** hebt geklikt;
+4. start de lokale mailservice op `127.0.0.1:8090`;
+5. opent één eigen tfwbmail-appvenster.
 
 De eerste start vereist Microsoft Edge WebView2 Runtime, die op recente
 Windows 10/11-installaties meestal al aanwezig is. Als Windows die runtime
@@ -326,7 +328,7 @@ Get-FileHash .\tfwbmail.exe -Algorithm SHA256
 Officiële v1.100.2-hash:
 
 ```text
-F4235968E91D929DC11D1DBB8AF49215439A626381B95B3A58A25EAE837271DD
+F72D71FF5573E24912D05E4509FF1CDED576BD31589BB08A589CACD69974AA5A
 ```
 
 ## Licentie

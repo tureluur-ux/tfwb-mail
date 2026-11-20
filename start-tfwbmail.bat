@@ -1,5 +1,9 @@
 @echo off
 setlocal
+if exist "%~dp0tfwbmail\downloads\tfwbmail.exe" (
+  start "" "%~dp0tfwbmail\downloads\tfwbmail.exe"
+  exit /b 0
+)
 cd /d "%~dp0tfwbmail"
 set "URL=http://127.0.0.1:8090/"
 curl.exe --silent --max-time 1 "%URL%" >nul 2>nul
@@ -12,20 +16,7 @@ if not exist "%PHP%" set "PHP=%LOCALAPPDATA%\Microsoft\WinGet\Links\php.exe"
 if not exist "%PHP%" set "PHP=C:\xampp\php\php.exe"
 if not exist "%PHP%" set "PHP=C:\php\php.exe"
 if not exist "%PHP%" (
-  where winget.exe >nul 2>nul
-  if errorlevel 1 (
-    echo PHP 8.3 is niet gevonden en WinGet is niet beschikbaar.
-    pause
-    exit /b 1
-  )
-  echo PHP 8.3 wordt op de achtergrond geïnstalleerd...
-  winget install --id PHP.PHP.8.3 --exact --silent --accept-source-agreements --accept-package-agreements
-  for /r "%LOCALAPPDATA%\Microsoft\WinGet\Packages" %%F in (php.exe) do (
-    if exist "%%~dpFext\php_imap.dll" set "PHP=%%F"
-  )
-)
-if not exist "%PHP%" (
-  echo PHP met IMAP kon niet worden gevonden.
+  echo PHP met IMAP kon niet worden gevonden. Start tfwbmail.exe voor de installatie-wizard.
   pause
   exit /b 1
 )
