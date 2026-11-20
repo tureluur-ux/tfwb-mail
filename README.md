@@ -1,146 +1,236 @@
-# Stalwart IMAP mailserver starter
+# tfwbmail
 
-Een eenvoudige, directe Docker Compose-starter voor
-[Stalwart Mail Server](https://stalw.art/) met IMAP en SMTP.
-Stalwart bewaart configuratie, accounts, e-mail en certificaten in het
-persistente Docker-volume `stalwart-data`.
+> Een snelle, lokale en cloud-vrije mailomgeving voor Windows en Docker.
 
-## Eigen domein
+tfwbmail is een complete webmailstarter rond **Stalwart Mail Server**.
+Berichten worden via IMAP opgehaald en via SMTP verzonden. Accounts,
+agenda, contacten, concepten en lokale cache blijven op jouw server of
+computer; er is geen tfwbmail-cloudaccount en geen verplichte externe
+autoconfiguratieservice.
 
-Je eigen domein is mogelijk. tfwbmail gebruikt een eigen hostname voor de
-webinterface en Stalwart gebruikt hetzelfde domain for MX/IMAP/SMTP. Zet
-`WEBMAIL_DOMAIN` in `.env` en maak een DNS `A`-/`AAAA`-record naar je server.
+**Release:** [tfwbmail v1.100.2](https://github.com/tureluur-ux/tfwb-mail/releases/tag/v1.100.2)
 
-Start voor een domein de optionele Caddy-reverse-proxy:
+---
 
-```sh
-docker compose --profile domain up -d --build
-```
+## Wat zit erin
 
-Caddy krijgt via Let's Encrypt automatisch een HTTPS-certificaat. Gebruik
-bijvoorbeeld `mail.example.com` voor IMAP/SMTP en `webmail.example.com` voor
-tfwbmail. Laat poorten `80` en `443` publiek bereikbaar. Stel een echte
-mailserver nooit alleen op HTTP/domeinen uit deze examples.
+- Moderne Outlook-/Thunderbird-achtige interface
+- Volledig lokaal accountbeheer
+- Stalwart-, XS4ALL-, KPN-, Microsoft 365-/Outlook- en Gmail-presets
+- Handmatige IMAP/SMTP-instellingen voor andere providers
+- IMAP-mappen: inbox, verzonden, concepten, spam en prullenbak
+- Berichten lezen, zoeken, selecteren, beantwoorden, doorsturen en verzenden
+- Conceptauto-save en lokale berichtencache
+- Bijlagen versturen
+- Lokale agenda met evenementen
+- Lokale contactenlijst
+- Compact inklapbare zijbalk en responsieve mobiele weergave
+- Licht en donker thema
+- Eerste-start tutorial
+- Veilige opslag van mailwachtwoorden met AES-256-GCM
+- Windows EXE en directe batchstarter
+- Optionele Docker Compose-stack met eigen HTTPS-domein via Caddy
 
-## Vereisten
+## Windows-snelstart
 
-- Linux-host met Docker Engine en Docker Compose
-- Een volledig gekwalificeerde mailhostnaam, bijvoorbeeld `mail.example.com`
-- DNS-beheer voor die host en het e-maildomein
-- Openstaande poorten `25`, `465`, `587`, `143`, `993` en `4190`
-- Een publiek routbaar IP-adres voor productie
+Download de EXE uit [release v1.100.2](https://github.com/tureluur-ux/tfwb-mail/releases/tag/v1.100.2)
+en dubbelklik op `tfwbmail.exe`.
 
-## Starten
+De launcher is een echte Windows-desktopapp. Het mailvenster opent niet als
+los browservenster: de lokale webinterface wordt in een ingebouwd WebView2-
+venster getoond.
 
-```sh
-cp .env.example .env
-# Bewerk .env en zet MAIL_HOSTNAME op je echte hostnaam.
-docker compose up -d
-docker compose ps
-```
+1. zoekt automatisch naar een PHP-runtime met IMAP, SQLite en TLS;
+2. installeert PHP 8.3 stil via WinGet als dat ontbreekt;
+3. start de lokale mailservice op `127.0.0.1:8090`;
+4. opent één eigen tfwbmail-appvenster.
 
-Na het starten is de lokale tfwbmail-webmail beschikbaar op:
+De eerste start vereist Microsoft Edge WebView2 Runtime, die op recente
+Windows 10/11-installaties meestal al aanwezig is. Als Windows die runtime
+mist, installeer dan de officiële WebView2 Runtime en start de EXE opnieuw.
+
+De batchstarter blijft beschikbaar voor diagnose en ontwikkelaars:
 
 <http://127.0.0.1:8090>
 
-De webmail-service wordt samen met Stalwart gestart en gebruikt het
-`webmail-data`-volume voor zijn lokale database en versleutelingssleutel.
-Voor het toevoegen van het account staan IMAP/SMTP standaard al op de Docker-
-hostnaam `stalwart`. Gebruik een account en wachtwoord dat je in de
-Stalwart-beheerinterface hebt aangemaakt.
+Alternatief vanuit de repository:
 
-Open de beheerinterface via SSH-tunnel; dit voorkomt blootstelling van de
-administratorinterface aan het internet:
-
-```sh
-ssh -L 8080:127.0.0.1:8080 gebruiker@jouw-server
+```bat
+start-tfwbmail.bat
 ```
 
-Open daarna <http://127.0.0.1:8080>. Gebruik voor het eerste account en
-eerste configureren de wizard in Stalwarts beheerinterface.
+## Eenmalige accountinstelling
 
-Bij een eerste installatie geeft Stalwart een eenmalig beheerdersaccount of
-installatietoken terug in de containerlogs:
+Bij de eerste start:
+
+1. kies **Automatisch op basis van e-mailadres** of een provider;
+2. vul naam, e-mailadres en wachtwoord in;
+3. controleer de automatisch ingevulde IMAP/SMTP-server, poort en TLS;
+4. klik **Account opslaan en openen**.
+
+De app probeert eerst een echte IMAP-verbinding. Een account wordt pas
+opgeslagen als inloggen met het mailwachtwoord lukt.
+
+| Provider | IMAP | SMTP |
+|---|---|---|
+| XS4ALL | imap.xs4all.nl:993 SSL/TLS | smtp.xs4all.nl:465 SSL/TLS |
+| KPN | imap.kpnmail.nl:993 SSL/TLS | smtp.kpnmail.nl:465 SSL/TLS |
+| Microsoft 365/Outlook | outlook.office365.com:993 SSL/TLS | smtp.office365.com:587 STARTTLS |
+| Gmail | imap.gmail.com:993 SSL/TLS | smtp.gmail.com:465 SSL/TLS |
+| Stalwart/zelf gehost | `stalwart`:993 SSL/TLS | `stalwart`:465 SSL/TLS |
+
+Gebruik voor Gmail een app-wachtwoord als Google-accountcontrole dit vereist.
+
+## Lokale gegevens en privacy
+
+tfwbmail gebruikt geen externe tfwbmail-backend. Voor lokale executie gelden:
+
+- accounts en wachtwoordcijfers: `tfwbmail/data/tbmail.sqlite`
+- versleutelingssleutel: `tfwbmail/data/.key`
+- agenda en contacten: dezelfde lokale SQLite-database
+- concepten en berichtcache: dezelfde lokale SQLite-database
+- browser-sessie: lokale PHP-sessioncookie
+
+Deze bestanden blijven op de eigen computer. Maak regelmatig een beveiligde
+back-up van **zowel** `tbmail.sqlite` als `.key`. Alleen een back-up van de
+database is onvoldoende: zonder de sleutel kunnen bestaande wachtwoorden
+niet worden ontsleuteld.
+
+Volledig resetten kan via **Lokale gegevens resetten** op de setup-/loginpagina.
+Hiermee worden alle lokale accounts, wachtwoorden, agenda, contacten en cache
+verwijderd. Deze actie is onomkeerbaar.
+
+## Docker / Stalwart-snelstart
+
+Op een Linux- of Docker-host:
 
 ```sh
-docker compose logs --tail=100 stalwart
+cp .env.example .env
+# Vul MAIL_HOSTNAME en eventueel WEBMAIL_DOMAIN in.
+docker compose up -d --build
+docker compose ps
 ```
 
-Stoppen en verwijderen van containers:
+Open lokaal:
+
+<http://127.0.0.1:8090>
+
+Stalwart-beheer:
+
+```sh
+ssh -L 8080:127.0.0.1:8080 gebruiker@server
+```
+
+Open daarna via de SSH-tunnel:
+
+<http://127.0.0.1:8080>
+
+Stalwart en tfwbmail delen het Compose-netwerk. In tfwbmail worden hostnamen
+`stalwart`, poort `993` en poort `465` automatisch gebruikt.
+
+### Volumes
+
+- `stalwart-data`: Stalwart-configuratie, e-mail, accounts en certificaten
+- `webmail-data`: tfwbmail-database en versleutelingssleutel
+- `caddy-data`/`caddy-config`: optionele HTTPS-certificaten en Caddy-configuratie
+
+Containers stoppen:
 
 ```sh
 docker compose down
 ```
 
-De mailboxgegevens blijven behouden bij `docker compose down`. Voor een
-volledige verwijdering, inclusief e-mail en configuratie:
+Alle account- en mailboxdata verwijderen:
 
 ```sh
 docker compose down -v
 ```
 
-## Accountbeheer
+## Eigen domein en HTTPS
 
-Maak accounts en domeinen aan in de Stalwart-beheerinterface. Voeg ten minste
-een account met een sterk, uniek wachtwoord toe voordat SMTP-authenticatie wordt
-gebruikt. Het project bevat geen echte accounts of wachtwoorden.
+tfwbmail kan achter een eigen domein draaien via Caddy. Stel in `.env`:
 
-Configureer in de beheerinterface:
-
-1. Je maildomein, bijvoorbeeld `example.com`.
-2. Een postvak/account, bijvoorbeeld `info@example.com`.
-3. Het inkomende protocol als IMAP via poort `993`.
-4. Uitgaande SMTP via poort `465` (implicit TLS) of `587` (STARTTLS).
-5. Optioneel ManageSieve via poort `4190`.
-
-Voor productie is SMTP-authenticatie en TLS voor alle gebruikersverkeer
-verplicht. Laat geen onbekende netwerkbronnen ongecontroleerd relayen.
-
-## DNS
-
-Vervang `example.com` door je domein en `mail.example.com` door je echte
-mailhost. Richt voor een eenvoudige setup beide op hetzelfde publieke IP.
-
-| Doel | Type | Naam | Waarde |
-|---|---|---|---|
-| IMAP/SMTP-host | A | `mail` | publiek IPv4-adres |
-| IPv6, indien beschikbaar | AAAA | `mail` | publiek IPv6-adres |
-| Mailrouting | MX | `@` | `10 mail.example.com.` |
-| SPF | TXT | `@` | `v=spf1 mx -all` |
-
-Stalwart kan DKIM-sleutels genereren. Maak na het genereren exact het door
-Stalwart getoonde `TXT`-record aan bij de aangegeven DKIM-selector. Een
-verplichte DMARC-policy kan bestaan uit:
-
-```text
-v=DMARC1; p=reject; rua=mailto:dmarc@example.com
+```env
+MAIL_HOSTNAME=mail.example.com
+WEBMAIL_DOMAIN=mail.example.com
+TZ=Europe/Amsterdam
 ```
 
-Voor betrouwbare levering moeten ook reverse DNS (PTR) voor het server-IP en
-een goede SMTP-reputatie zijn geconfigureerd. DNS-validatie kan 24 uur
-of langer duren.
+Start met het optionele domeinprofiel:
 
-## TLS
+```sh
+docker compose --profile domain up -d --build
+```
 
-Stalwart ondersteunt certificaatbeheer via de beheerinterface en ACME,
-bijvoorbeeld met Let's Encrypt. Gebruik een echte publieke hostname en
-zorg dat poorten `80` en `443` bereikbaar zijn als ACME HTTP-validatie wordt
-gebruikt. Raadpleeg de Stalwart-documentatie voor de ondersteunde ACME- en
-certificaatinstellingen van de geïnstalleerde versie.
+Caddy ontvangt poorten `80` en `443` en haalt automatisch een
+Let's Encrypt-certificaat op. Voor gescheiden hostnamen kan bijvoorbeeld:
 
-De Compose-opzet publiceert geen poort `443`; gebruik poort `443` pas nadat
-Stalwart zelf of een reverse proxy die poort verzorgt en de beheerinterface
-alleen via een tunnel of firewall bereikbaar blijft.
+- `mail.example.com`: IMAP/SMTP en Stalwart
+- `webmail.example.com`: tfwbmail-webinterface
 
-Stuur in mailclients de hostnaam `mail.example.com` en gebruik:
+De DNS voor beide hostnamen moet naar het publieke serveradres wijzen.
+Poort `25`, `465`, `587`, `143`, `993` en `4190` moeten voor mailproductie
+bereikbaar zijn; poorten `80` en `443` zijn nodig voor HTTPS/ACME.
 
-- IMAP: poort `993`, TLS
-- SMTP-submission: poort `465`, implicit TLS, of poort `587`, STARTTLS
-- Gebruiker: volledig e-mailadres
+## DNS voor een Stalwart-domein
 
-## Back-up en onderhoud
+Vervang de voorbeelden door je eigen domein en public IP.
 
-Maak regelmatig een back-up van het named volume:
+| Doel | Record | Naam | Waarde |
+|---|---|---|---|
+| Mailserver | A | `mail` | publiek IPv4-adres |
+| Mailserver IPv6 | AAAA | `mail` | publiek IPv6-adres |
+| Mailrouting | MX | `@` | `10 mail.example.com.` |
+| SPF | TXT | `@` | `v=spf1 mx -all` |
+| Webmail | CNAME of A | `webmail` | serveradres |
+
+Genereer DKIM via Stalwart en publiceer exact het door Stalwart getoonde
+selector/waarde-record. Zet daarna ook een DMARC-record:
+
+```text
+v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com
+```
+
+Na een stabiele observatieperiode kan `p=reject` worden gebruikt.
+Reverse DNS/PTR voor het uitgaande SMTP-IP is voor betrouwbare levering ook
+noodzakelijk.
+
+## IMAP/SMTP-configuratie
+
+- IMAP: poort `993` met implicit TLS
+- STARTTLS: poort `143` voor IMAP indien ondersteund
+- SMTP submission: poort `587` met STARTTLS
+- Implicit SMTP TLS: poort `465`
+- SMTP relay: poort `25`
+
+Gebruik voor IMAP/SMTP altijd het volledige e-mailadres als gebruikersnaam.
+Gebruik geen beheerderswachtwoord voor een gewoon account. Sommige providers
+vereisen app-wachtwoorden of MFA/OAuth; providerinstellingen kunnen wijzigen.
+
+## Beveiligingsmodel
+
+- IMAP- en SMTP-wachtwoorden worden alleen lokaal versleuteld opgeslagen
+- Geen accountgegevens naar tfwbmail, GitHub of een externe cloudservice
+- IMAP-verbindingen en SMTP-verkeer gebruiken TLS door configuratie
+- De beheerinterface van Stalwart wordt niet publiek gepubliceerd
+- De tfwbmail-SQLitegegevensmap wordt door `.htaccess`/Docker omheining afgeschermd
+- HTML-mail wordt opgeschoond; scripts en actieve embed-content worden niet uitgevoerd
+- Docker gebruikt `no-new-privileges`
+- Gebruik HTTPS voor internettoegang
+- Zorg voor firewall, updates, sterke wachtwoorden en back-uphersteltests
+
+## Back-up
+
+Windows back-up:
+
+```powershell
+Copy-Item tfwbmail\data\tbmail.sqlite "$env:USERPROFILE\Backups\tbmail.sqlite"
+Copy-Item tfwbmail\data\.key "$env:USERPROFILE\Backups\tfwbmail.key"
+```
+
+Bewaar beide bestanden op een versleutelde, beveiligde back-uplocatie.
+
+Docker-volume-back-up:
 
 ```sh
 docker run --rm \
@@ -149,25 +239,96 @@ docker run --rm \
   alpine tar czf /backup/stalwart-data.tar.gz -C /data .
 ```
 
-Vervang bij een andere Compose-projectnaam eventueel `tfwb-mail_stalwart-data`
-door het volume dat `docker volume ls` toont. Update gecontroleerd met:
+## Troubleshooting
 
-```sh
-docker compose pull
-docker compose up -d
-docker image prune
+### IMAP-verbindingsfout
+
+- Controleer hostnaam, poort en SSL/STARTTLS;
+- gebruik het volledige e-mailadres;
+- probeer een app-wachtwoord;
+- controleer firewall en provideraccountblokkade;
+- activeer of installeer de PHP `imap`-extensie.
+
+### SQLite `could not find driver`
+
+Laad bij Windows-PHP samen:
+
+```text
+php_pdo_sqlite.dll
+php_sqlite3.dll
+php_imap.dll
+php_openssl.dll
+php_mbstring.dll
 ```
 
-## Productiewaarschuwingen
+De meegeleverde `start-tfwbmail.bat` en EXE zoeken automatisch naar een
+PHP-runtime met deze modules.
 
-- Dit is een generiek starterproject, geen beheerder- of security-hardeningsservice.
-- Test back-up en herstel voordat echte mail wordt geaccepteerd.
-- Configureer firewallregels; beperk poort `8080` aan lokaal netwerk/SSH-tunnel.
-- Gebruik een unieke, sterke administrator-authenticatie en laat MFA/SSO toe
-  waar Stalwart dit ondersteunt.
-- Schakel ongebruikte endpoints uit, monitor logs, diskruimte en certificaatverloop.
-- Pin voor productie idealiter een specifieke Stalwart-versie, en test upgrades
-  in een stagingomgeving.
-- Hostingproviders kunnen poort `25` blokkeren; test die poort bij de provider.
-- Een mailserver heeft constante monitoring nodig voor misbruik, spam en
-  resource-uitputting.
+### Berichten verschijnen niet
+
+- controleer provideraccount en mapnamen;
+- log opnieuw in;
+- controleer internetverbinding;
+- laad inbox opnieuw;
+- IMAP-mapping kan `Sent`, `Junk` of `Trash` anders noemen.
+
+### De EXE wordt geblokkeerd
+
+Windows Smart App Control of antivirusbeleid kan een lokaal gebouwd EXE
+blokkeer. Controleer alleen de SHA-256 en signeer of packageer de EXE voor
+organisatiebrede distributie in een vertrouwde uitgifteomgeving.
+
+## Ontwikkelen
+
+PHP-syntaxcontrole:
+
+```sh
+Get-ChildItem -Recurse -Filter *.php tfwbmail |
+  ForEach-Object { php -l $_.FullName }
+```
+
+JavaScript-syntaxcontrole:
+
+```sh
+node --check tfwbmail/assets/app.js
+node --check tfwbmail/assets/calendar.js
+node --check tfwbmail/assets/contacts.js
+```
+
+Windows-EXE bouwen:
+
+```sh
+dotnet publish tfwbmail/launcher.csproj -c Release -r win-x64 `
+  --self-contained true `
+  -p:PublishSingleFile=true `
+  -p:IncludeNativeLibrariesForSelfExtract=true `
+  -o tfwbmail/downloads
+```
+
+## Release
+
+Versie 1.100.2:
+
+<https://github.com/tureluur-ux/tfwb-mail/releases/tag/v1.100.2>
+
+Het Windows-EXE-asset is beschikbaar via de release:
+
+<https://github.com/tureluur-ux/tfwb-mail/releases/download/v1.100.2/tfwbmail.exe>
+
+### SHA-256-integriteit
+
+Controleer het gedownloade EXE-bestand:
+
+```powershell
+Get-FileHash .\tfwbmail.exe -Algorithm SHA256
+```
+
+Officiële v1.100.2-hash:
+
+```text
+8E57BE392D64E53C9EAAA7230E49FAAB6A6BF29447F1E7AAA0AE8F902A60BE4C
+```
+
+## Licentie
+
+MIT — zie `LICENSE`.
