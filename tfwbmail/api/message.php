@@ -1,0 +1,6 @@
+<?php
+require __DIR__.'/../lib.php';boot();require_login();header('Content-Type: application/json; charset=utf-8');
+try{$a=account();$uid=(int)($_GET['uid']??0);$folder=preg_replace('/[^A-Za-z0-9 _-]/','',$_GET['folder']??'INBOX');$imap=imap_connection($a);$path='{'.$a['imap_host'].':'.$a['imap_port'].'/imap'.($a['imap_security']==='ssl'?'/ssl':'/tls').'/novalidate-cert}'.$folder;if(!imap_reopen($imap,$path))throw new RuntimeException('Map niet gevonden.');$n=imap_msgno($imap,$uid);if(!$n)throw new RuntimeException('Bericht niet gevonden.');$ov=imap_fetch_overview($imap,(string)$n,0)[0]??null;$body=message_body($imap,$n);$st=imap_fetchstructure($imap,$n);$isHtml=false;if($st&&!empty($st->parts)){foreach($st->parts as $p)if(($p->type??-1)===0&&strtolower($p->subtype??'')==='html'){$isHtml=true;break;}}elseif($st&&strtolower($st->subtype??'')==='html')$isHtml=true;
+ if($isHtml){$body=sanitize_html($body);}else $body='<pre>'.h($body).'</pre>';
+ imap_setflag_full($imap,(string)$n,'\\Seen');echo json_encode(['ok'=>true,'from'=>mime_decode($ov->from??''),'to'=>mime_decode($ov->to??''),'subject'=>mime_decode($ov->subject??''),'date'=>$ov->date??'','body'=>$body]);imap_close($imap);
+}catch(Throwable $e){http_response_code(500);echo json_encode(['ok'=>false,'error'=>$e->getMessage()]);}

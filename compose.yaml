@@ -1,0 +1,56 @@
+name: tfwb-mail
+
+services:
+  stalwart:
+    image: stalwartlabs/stalwart:latest
+    restart: unless-stopped
+    hostname: ${MAIL_HOSTNAME:-mail.example.com}
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "25:25"       # SMTP
+      - "587:587"     # SMTP submission
+      - "465:465"     # SMTP submissions with implicit TLS
+      - "143:143"     # IMAP
+      - "993:993"     # IMAP over implicit TLS
+      - "4190:4190"   # ManageSieve
+      - "127.0.0.1:8080:8080" # Web administration UI
+    volumes:
+      - stalwart-data:/opt/stalwart
+    security_opt:
+      - no-new-privileges:true
+
+  webmail:
+    build:
+      context: ./tfwbmail
+    restart: unless-stopped
+    depends_on:
+      - stalwart
+    ports:
+      - "127.0.0.1:8090:80"
+    volumes:
+      - webmail-data:/var/www/html/data
+    security_opt:
+      - no-new-privileges:true
+
+  https:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    profiles:
+      - domain
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - webmail
+
+volumes:
+  stalwart-data:
+  webmail-data:
+  caddy-data:
+  caddy-config:

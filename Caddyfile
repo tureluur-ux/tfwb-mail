@@ -1,0 +1,4 @@
+{$WEBMAIL_DOMAIN:mail.example.com} {
+	encode zstd gzip
+	reverse_proxy webmail:80
+}

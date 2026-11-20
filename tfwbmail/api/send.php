@@ -1,0 +1,3 @@
+<?php
+require __DIR__.'/../lib.php';boot();require_login();header('Content-Type: application/json; charset=utf-8');
+try{if($_SERVER['REQUEST_METHOD']!=='POST')throw new RuntimeException('Ongeldige aanvraag.');csrf_check();$a=account();$to=trim($_POST['to']??'');$subject=trim($_POST['subject']??'');$body=trim($_POST['body']??'');if(!filter_var($to,FILTER_VALIDATE_EMAIL))throw new RuntimeException('Vul een geldig e-mailadres in.');if($body==='')throw new RuntimeException('Het bericht is leeg.');$f=$_FILES['attachment']??null;smtp_send($a,$to,$subject,$body,$f);echo json_encode(['ok'=>true,'message'=>'E-mail verzonden.']);}catch(Throwable $e){http_response_code(400);echo json_encode(['ok'=>false,'error'=>$e->getMessage()]);}

@@ -1,0 +1,7 @@
+/data/*
+!/data/.gitkeep
+!/data/.htaccess
+!/data/.gitignore
+/bin/
+/obj/
+/downloads/*.pdb

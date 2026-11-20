@@ -1,0 +1,1 @@
+<?php require __DIR__.'/lib.php';boot();session_destroy();header('Location: login.php');
