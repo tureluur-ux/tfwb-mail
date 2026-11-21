@@ -13,20 +13,37 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="#0B1220" Padding="16">
+        <Border Grid.Column="0" Background="#0B1220" Padding="14">
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top">
-                    <TextBlock Text="tfwbmail" FontSize="22" FontWeight="SemiBold" Margin="4,4,4,20"/>
+                    <DockPanel Margin="2,2,2,18">
+                        <Border Width="38" Height="38" CornerRadius="11" Background="#315BEA" DockPanel.Dock="Left">
+                            <Canvas Width="38" Height="38">
+                                <Path Stroke="White" StrokeThickness="2.2" StrokeLineJoin="Round"
+                                      Data="M8,11 L30,11 L30,28 L8,28 Z M9,12 L19,21 L29,12"/>
+                                <Ellipse Canvas.Left="27" Canvas.Top="4" Width="8" Height="8"
+                                         Fill="#78D7B2" Stroke="#315BEA" StrokeThickness="1.5"/>
+                            </Canvas>
+                        </Border>
+                        <TextBlock x:Name="BrandText" Text="tfwbmail" FontSize="22" FontWeight="SemiBold"
+                                   Margin="10,5,0,0"/>
+                    </DockPanel>
                     <Button x:Name="ComposeButton" Content="+ Nieuw bericht" Height="42"
                             Background="{StaticResource AccentBrush}" Foreground="White"
                             BorderThickness="0" Click="ComposeClick" Margin="0,0,0,16"/>
-                    <Button Content="Inkomend" Style="{StaticResource NavButton}" Tag="INBOX" Click="FolderClick"/>
-                    <Button Content="Verzonden" Style="{StaticResource NavButton}" Tag="Sent" Click="FolderClick"/>
-                    <Button Content="Concepten" Style="{StaticResource NavButton}" Tag="Drafts" Click="FolderClick"/>
-                    <Button Content="Prullenbak" Style="{StaticResource NavButton}" Tag="Trash" Click="FolderClick"/>
+                    <Button x:Name="InboxNav" Content="Inkomend" Style="{StaticResource NavButton}" Tag="INBOX" Click="FolderClick"/>
+                    <Button x:Name="SentNav" Content="Verzonden" Style="{StaticResource NavButton}" Tag="Sent" Click="FolderClick"/>
+                    <Button x:Name="DraftNav" Content="Concepten" Style="{StaticResource NavButton}" Tag="Drafts" Click="FolderClick"/>
+                    <Button x:Name="TrashNav" Content="Prullenbak" Style="{StaticResource NavButton}" Tag="Trash" Click="FolderClick"/>
+                    <Button x:Name="AgendaNav" Content="Agenda" Style="{StaticResource NavButton}" Click="AgendaClick"/>
+                    <Button x:Name="ContactsNav" Content="Contacten" Style="{StaticResource NavButton}" Click="ContactsClick"/>
                 </StackPanel>
-                <Button DockPanel.Dock="Bottom" Content="Accountinstellingen"
-                        Style="{StaticResource NavButton}" Click="SettingsClick"/>
+                <StackPanel DockPanel.Dock="Bottom">
+                    <Button x:Name="CollapseButton" Content="Zijbalk inklappen"
+                            Style="{StaticResource NavButton}" Click="CollapseClick"/>
+                    <Button x:Name="SettingsNav" Content="Accountinstellingen"
+                            Style="{StaticResource NavButton}" Click="SettingsClick"/>
+                </StackPanel>
             </DockPanel>
         </Border>
 

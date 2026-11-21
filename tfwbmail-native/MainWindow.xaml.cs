@@ -23,11 +23,22 @@ public partial class MainWindow : Window
     private Account? account;
     private string currentFolder = "INBOX";
     private MimeMessage? selectedMessage;
+    private bool sidebarCollapsed;
 
     public MainWindow()
     {
         InitializeComponent();
         MessageList.ItemsSource = messages;
+        sidebarCollapsed = File.Exists(Path.Combine(dataDirectory, "sidebar-collapsed")) ;
+        if (sidebarCollapsed) ApplySidebarState();
+        KeyDown += (_, args) =>
+        {
+            if (args.KeyboardDevice.Modifiers == System.Windows.Input.ModifierKeys.Control
+                && args.Key == System.Windows.Input.Key.N)
+            {
+                ComposeClick(ComposeButton, new RoutedEventArgs());
+            }
+        };
         Loaded += async (_, _) => await InitializeAsync();
         Closed += (_, _) => Application.Current.Shutdown();
     }
@@ -44,6 +55,41 @@ public partial class MainWindow : Window
     }
 
     private void SettingsClick(object sender, RoutedEventArgs e) => ShowSettings();
+    private void AgendaClick(object sender, RoutedEventArgs e)
+    {
+        var window = new AgendaWindow(dataDirectory) { Owner = this };
+        window.Show();
+    }
+    private void ContactsClick(object sender, RoutedEventArgs e)
+    {
+        var window = new ContactsWindow(dataDirectory) { Owner = this };
+        window.Show();
+    }
+
+    private void CollapseClick(object sender, RoutedEventArgs e)
+    {
+        sidebarCollapsed = !sidebarCollapsed;
+        ApplySidebarState();
+        Directory.CreateDirectory(dataDirectory);
+        var marker = Path.Combine(dataDirectory, "sidebar-collapsed");
+        if (sidebarCollapsed) File.WriteAllText(marker, "1");
+        else File.Delete(marker);
+    }
+
+    private void ApplySidebarState()
+    {
+        NavColumn.Width = sidebarCollapsed ? new GridLength(72) : new GridLength(220);
+        BrandText.Visibility = sidebarCollapsed ? Visibility.Collapsed : Visibility.Visible;
+        ComposeButton.Content = sidebarCollapsed ? "+" : "+ Nieuw bericht";
+        InboxNav.Content = sidebarCollapsed ? "IN" : "Inkomend";
+        SentNav.Content = sidebarCollapsed ? "VE" : "Verzonden";
+        DraftNav.Content = sidebarCollapsed ? "CO" : "Concepten";
+        TrashNav.Content = sidebarCollapsed ? "PR" : "Prullenbak";
+        AgendaNav.Content = sidebarCollapsed ? "AG" : "Agenda";
+        ContactsNav.Content = sidebarCollapsed ? "CO" : "Contacten";
+        SettingsNav.Content = sidebarCollapsed ? "AC" : "Accountinstellingen";
+        CollapseButton.Content = sidebarCollapsed ? ">>" : "Zijbalk inklappen";
+    }
 
     private void ShowSettings()
     {
