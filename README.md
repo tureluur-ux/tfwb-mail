@@ -1,231 +1,301 @@
 # tfwbmail
 
-> Een snelle, lokale en cloud-vrije mailomgeving voor Windows en Docker.
+**A local-first email desktop for Windows.**
 
-tfwbmail is een complete webmailstarter rond **Stalwart Mail Server**.
-Berichten worden via IMAP opgehaald en via SMTP verzonden. Accounts,
-agenda, contacten, concepten en lokale cache blijven op jouw server of
-computer; er is geen tfwbmail-cloudaccount en geen verplichte externe
-autoconfiguratieservice.
+tfwbmail is a native .NET 8 / WPF mail application with direct IMAP and SMTP
+support. It is designed to feel like a complete desktop mail client, while
+keeping account data, settings, agenda and contacts on the user's own device.
 
-**Release:** [tfwbmail v1.100.2](https://github.com/tureluur-ux/tfwb-mail/releases/tag/v1.100.2)
+No tfwbmail account. No tfwbmail cloud. No XAMPP. No Apache. No PHP runtime.
+No browser window and no localhost mail server are required for the native app.
 
----
+**Latest release:** [tfwbmail v1.100.2](https://github.com/tureluur-ux/tfwb-mail/releases/tag/v1.100.2)
 
-## Wat zit erin
+## Download
 
-- Moderne Outlook-/Thunderbird-achtige interface
-- Volledig lokaal accountbeheer
-- Stalwart-, XS4ALL-, KPN-, Microsoft 365-/Outlook- en Gmail-presets
-- Handmatige IMAP/SMTP-instellingen voor andere providers
-- IMAP-mappen: inbox, verzonden, concepten, spam en prullenbak
-- Berichten lezen, zoeken, selecteren, beantwoorden, doorsturen en verzenden
-- Conceptauto-save en lokale berichtencache
-- Bijlagen versturen
-- Lokale agenda met evenementen
-- Lokale contactenlijst
-- Compact inklapbare zijbalk en responsieve mobiele weergave
-- Licht en donker thema
-- Eerste-start tutorial
-- Veilige opslag van mailwachtwoorden met AES-256-GCM
-- Windows EXE en directe batchstarter
-- Optionele Docker Compose-stack met eigen HTTPS-domein via Caddy
+Download the native Windows executable:
 
-## Windows-snelstart
+**[Download tfwbmail.exe](https://github.com/tureluur-ux/tfwb-mail/releases/download/v1.100.2/tfwbmail.exe)**
 
-### Native desktopversie
+The executable is self-contained for `win-x64` and starts directly. It uses
+MailKit for IMAP/SMTP and Microsoft.Data.Sqlite for local data. No installer,
+XAMPP installation or internet account is required for tfwbmail itself.
 
-De Windowsversie is een echte native WPF-desktopapp. PHP, XAMPP, Apache,
-localhost-webservers en een WebView2-browservenster worden niet gebruikt.
-De EXE verbindt direct via IMAP/SMTP met MailKit en bewaart het account lokaal
-met SQLite en Windows DPAPI.
+The EXE is approximately 166 MB because it includes the .NET runtime and native
+dependencies.
 
-Download de EXE uit [release v1.100.2](https://github.com/tureluur-ux/tfwb-mail/releases/tag/v1.100.2)
-en dubbelklik op `tfwbmail.exe`.
+### Windows startup
 
-De launcher is een echte native WPF-desktopapp. Er is geen PHP, XAMPP, Apache,
-WebView2, browservenster of localhostserver nodig. IMAP/SMTP wordt via MailKit
-direct geopend en lokale accountgegevens worden met SQLite en Windows DPAPI
-beschermd.
+```text
+1. Download tfwbmail.exe.
+2. Verify the SHA-256 checksum shown below.
+3. Double-click the executable.
+4. Enter the account and server details.
+5. tfwbmail validates the IMAP login before saving the account.
+```
 
-Alternatief vanuit de repository:
+You can also start it from the repository:
 
 ```bat
 start-tfwbmail.bat
 ```
 
-## Eenmalige accountinstelling
+## Local-first privacy
 
-Bij de eerste start:
+The native application does not send account details or mail credentials to
+tfwbmail, GitHub or a tfwbmail backend.
 
-1. kies **Automatisch op basis van e-mailadres** of een provider;
-2. vul naam, e-mailadres en wachtwoord in;
-3. controleer de automatisch ingevulde IMAP/SMTP-server, poort en TLS;
-4. klik **Account opslaan en openen**.
+| Local item | Location |
+|---|---|
+| Account database | `%LOCALAPPDATA%\tfwbmail\tfwbmail-native.sqlite` |
+| Protected password | Stored inside the SQLite database with Windows DPAPI |
+| Agenda | Same local SQLite database |
+| Contacts | Same local SQLite database |
+| Sidebar preference | `%LOCALAPPDATA%\tfwbmail\sidebar-collapsed` |
 
-De app probeert eerst een echte IMAP-verbinding. Een account wordt pas
-opgeslagen als inloggen met het mailwachtwoord lukt.
+The Windows DPAPI password protection is tied to the current Windows user.
+Protecting the account database should include securing the Windows profile
+and maintaining a secure backup.
+
+Mail itself remains on the configured mail provider or on a server operated by
+the user. tfwbmail only communicates directly with:
+
+- the IMAP server for folders and messages;
+- the SMTP server for outgoing mail;
+- DNS and provider services used by the chosen mail provider.
+
+There is no mandatory tfwbmail cloud synchronization.
+
+## Native features
+
+### Mail
+
+- Inbox and folder navigation;
+- Direct IMAP connection;
+- Direct SMTP sending;
+- Search by sender or subject;
+- Read message view;
+- Reply flow;
+- Message deletion;
+- Message selection;
+- Compact message list;
+- Incoming folder loading;
+- Sent, drafts and trash folder names;
+- TLS/SSL and STARTTLS support;
+- Account validation before saving;
+- Gmail and Microsoft-style provider defaults.
+
+### Interface
+
+- Native tfwbmail desktop window;
+- Custom tfwbmail envelope logo;
+- Dark, low-glare layout;
+- Persistent collapsible sidebar;
+- Compact icon-style navigation;
+- Large desktop workspace;
+- Responsive minimum window size;
+- Account, inbox, sent, draft and trash navigation;
+- Agenda and contacts panels;
+- Local keyboard shortcut: `Ctrl+N` opens a new message.
+
+### Local productivity
+
+- Personal agenda stored in SQLite;
+- Add and delete agenda entries;
+- Personal contacts stored in SQLite;
+- Add and delete contacts;
+- Account settings without a cloud account;
+- Local sidebar state.
+
+### Security and account handling
+
+- Direct IMAP authentication;
+- Direct SMTP authentication;
+- Password protection with Windows DPAPI;
+- Account is not saved until IMAP login succeeds;
+- SSL/TLS for IMAP port 993;
+- SSL/TLS or STARTTLS for SMTP;
+- App-password support for providers that require it;
+- No secret values are committed to this repository.
+
+## Account setup
+
+On the first start, the account window asks for:
+
+| Field | Example |
+|---|---|
+| Name | User name |
+| Email address | user@example.com |
+| Password | Mail-provider password or app password |
+| IMAP host | imap.example.com |
+| IMAP port | 993 |
+| SMTP host | smtp.example.com |
+| SMTP port | 465 or 587 |
+
+The native app first opens an encrypted-TLS IMAP connection and authenticates
+the account. Only if authentication succeeds does it save the account.
+
+### Common provider settings
 
 | Provider | IMAP | SMTP |
 |---|---|---|
-| XS4ALL | imap.xs4all.nl:993 SSL/TLS | smtp.xs4all.nl:465 SSL/TLS |
-| KPN | imap.kpnmail.nl:993 SSL/TLS | smtp.kpnmail.nl:465 SSL/TLS |
-| Microsoft 365/Outlook | outlook.office365.com:993 SSL/TLS | smtp.office365.com:587 STARTTLS |
-| Gmail | imap.gmail.com:993 SSL/TLS | smtp.gmail.com:465 SSL/TLS |
-| Stalwart/zelf gehost | `stalwart`:993 SSL/TLS | `stalwart`:465 SSL/TLS |
+| Gmail | `imap.gmail.com:993` with SSL/TLS | `smtp.gmail.com:465` with SSL/TLS |
+| Microsoft 365 / Outlook | `outlook.office365.com:993` with SSL/TLS | `smtp.office365.com:587` with STARTTLS |
+| XS4ALL | `imap.xs4all.nl:993` with SSL/TLS | `smtp.xs4all.nl:465` with SSL/TLS |
+| KPN | `imap.kpnmail.nl:993` with SSL/TLS | `smtp.kpnmail.nl:465` with SSL/TLS |
+| Stalwart / self-hosted | `<domain>:993` with SSL/TLS | `<domain>:465` with SSL/TLS |
 
-Gebruik voor Gmail een app-wachtwoord als Google-accountcontrole dit vereist.
+Provider rules can change. Gmail and Microsoft accounts may require an app
+password or additional account authorization.
 
-## Lokale gegevens en privacy
+Use the full email address as the IMAP and SMTP username. Do not enter a
+server administrator password as a normal mailbox password.
 
-tfwbmail gebruikt geen externe tfwbmail-backend. Voor lokale executie gelden:
+## Build from source
 
-- accounts en wachtwoordcijfers: `tfwbmail/data/tbmail.sqlite`
-- versleutelingssleutel: `tfwbmail/data/.key`
-- agenda en contacten: dezelfde lokale SQLite-database
-- concepten en berichtcache: dezelfde lokale SQLite-database
-- browser-sessie: lokale PHP-sessioncookie
+Requirements:
 
-Deze bestanden blijven op de eigen computer. Maak regelmatig een beveiligde
-back-up van **zowel** `tbmail.sqlite` als `.key`. Alleen een back-up van de
-database is onvoldoende: zonder de sleutel kunnen bestaande wachtwoorden
-niet worden ontsleuteld.
+- Windows 10 or 11;
+- .NET 8 SDK;
+- Visual Studio or WPF-capable build tooling;
+- an internet connection for the initial NuGet restore.
 
-Volledig resetten kan via **Lokale gegevens resetten** op de setup-/loginpagina.
-Hiermee worden alle lokale accounts, wachtwoorden, agenda, contacten en cache
-verwijderd. Deze actie is onomkeerbaar.
+Build and publish the native executable:
 
-## Docker / Stalwart-snelstart
+```powershell
+dotnet publish tfwbmail-native/tfwbmail-native.csproj `
+  -c Release `
+  -r win-x64 `
+  --self-contained true `
+  -p:PublishSingleFile=true `
+  -p:IncludeNativeLibrariesForSelfExtract=true `
+  -o tfwbmail-native/publish
+```
 
-Op een Linux- of Docker-host:
+The packaged executable is:
+
+```text
+tfwbmail-native/publish/tfwbmail.exe
+```
+
+## Optional Stalwart mail server
+
+This repository also contains an optional Docker Compose setup for running
+Stalwart Mail Server. The native app can connect to Stalwart, but Docker is not
+needed for the desktop application itself.
+
+Create local environment settings:
 
 ```sh
 cp .env.example .env
-# Vul MAIL_HOSTNAME en eventueel WEBMAIL_DOMAIN in.
+```
+
+Set at least:
+
+```env
+MAIL_HOSTNAME=mail.example.com
+TZ=Europe/Amsterdam
+```
+
+Start Stalwart:
+
+```sh
 docker compose up -d --build
 docker compose ps
 ```
 
-Open lokaal:
+Stalwart persists mail and configuration in Docker volume
+`stalwart-data`.
 
-<http://127.0.0.1:8090>
+## Optional Docker webmail
 
-Stalwart-beheer:
+The repository keeps the original webmail and Docker files for optional
+self-hosted deployment. It is separate from the native Windows application.
 
-```sh
-ssh -L 8080:127.0.0.1:8080 gebruiker@server
+The webmail service listens on loopback:
+
+```text
+http://127.0.0.1:8090
 ```
 
-Open daarna via de SSH-tunnel:
+Docker volumes:
 
-<http://127.0.0.1:8080>
+| Volume | Purpose |
+|---|---|
+| `stalwart-data` | Stalwart configuration, mailboxes and certificates |
+| `webmail-data` | Optional webmail SQLite data and key |
+| `caddy-data` | Optional Caddy certificates |
+| `caddy-config` | Optional Caddy configuration |
 
-Stalwart en tfwbmail delen het Compose-netwerk. In tfwbmail worden hostnamen
-`stalwart`, poort `993` en poort `465` automatisch gebruikt.
-
-### Volumes
-
-- `stalwart-data`: Stalwart-configuratie, e-mail, accounts en certificaten
-- `webmail-data`: tfwbmail-database en versleutelingssleutel
-- `caddy-data`/`caddy-config`: optionele HTTPS-certificaten en Caddy-configuratie
-
-Containers stoppen:
+Stop containers:
 
 ```sh
 docker compose down
 ```
 
-Alle account- en mailboxdata verwijderen:
+Remove containers and all data:
 
 ```sh
 docker compose down -v
 ```
 
-## Eigen domein en HTTPS
+This data-deletion command is destructive.
 
-tfwbmail kan achter een eigen domein draaien via Caddy. Stel in `.env`:
+## Custom domain and DNS
+
+For a public Stalwart mail server, the DNS owner must provide and control:
+
+| Record | Purpose | Example |
+|---|---|---|
+| A | IPv4 mail host | `mail.example.com -> public IPv4` |
+| AAAA | IPv6 mail host | `mail.example.com -> public IPv6` |
+| MX | Mail routing | `10 mail.example.com.` |
+| SPF TXT | Outbound sender authorization | `v=spf1 mx -all` |
+| DKIM TXT | Signed outgoing mail | Value supplied by Stalwart |
+| DMARC TXT | Policy and reports | `v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com` |
+
+For normal production delivery:
+
+- configure reverse DNS/PTR for the outbound public IP;
+- open SMTP port `25`;
+- open submission ports `587` and/or `465`;
+- open IMAP port `993`;
+- configure SPF, DKIM and DMARC;
+- test TLS certificates;
+- test sending and receiving before users depend on the server;
+- monitor disk usage and create restore-tested backups.
+
+Optional HTTPS for the webmail:
 
 ```env
 MAIL_HOSTNAME=mail.example.com
-WEBMAIL_DOMAIN=mail.example.com
+WEBMAIL_DOMAIN=webmail.example.com
 TZ=Europe/Amsterdam
 ```
-
-Start met het optionele domeinprofiel:
 
 ```sh
 docker compose --profile domain up -d --build
 ```
 
-Caddy ontvangt poorten `80` en `443` en haalt automatisch een
-Let's Encrypt-certificaat op. Voor gescheiden hostnamen kan bijvoorbeeld:
+Ports `80` and `443` must be reachable for Caddy ACME certificates.
 
-- `mail.example.com`: IMAP/SMTP en Stalwart
-- `webmail.example.com`: tfwbmail-webinterface
+## Backup
 
-De DNS voor beide hostnamen moet naar het publieke serveradres wijzen.
-Poort `25`, `465`, `587`, `143`, `993` en `4190` moeten voor mailproductie
-bereikbaar zijn; poorten `80` en `443` zijn nodig voor HTTPS/ACME.
-
-## DNS voor een Stalwart-domein
-
-Vervang de voorbeelden door je eigen domein en public IP.
-
-| Doel | Record | Naam | Waarde |
-|---|---|---|---|
-| Mailserver | A | `mail` | publiek IPv4-adres |
-| Mailserver IPv6 | AAAA | `mail` | publiek IPv6-adres |
-| Mailrouting | MX | `@` | `10 mail.example.com.` |
-| SPF | TXT | `@` | `v=spf1 mx -all` |
-| Webmail | CNAME of A | `webmail` | serveradres |
-
-Genereer DKIM via Stalwart en publiceer exact het door Stalwart getoonde
-selector/waarde-record. Zet daarna ook een DMARC-record:
-
-```text
-v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com
-```
-
-Na een stabiele observatieperiode kan `p=reject` worden gebruikt.
-Reverse DNS/PTR voor het uitgaande SMTP-IP is voor betrouwbare levering ook
-noodzakelijk.
-
-## IMAP/SMTP-configuratie
-
-- IMAP: poort `993` met implicit TLS
-- STARTTLS: poort `143` voor IMAP indien ondersteund
-- SMTP submission: poort `587` met STARTTLS
-- Implicit SMTP TLS: poort `465`
-- SMTP relay: poort `25`
-
-Gebruik voor IMAP/SMTP altijd het volledige e-mailadres als gebruikersnaam.
-Gebruik geen beheerderswachtwoord voor een gewoon account. Sommige providers
-vereisen app-wachtwoorden of MFA/OAuth; providerinstellingen kunnen wijzigen.
-
-## Beveiligingsmodel
-
-- IMAP- en SMTP-wachtwoorden worden alleen lokaal versleuteld opgeslagen
-- Geen accountgegevens naar tfwbmail, GitHub of een externe cloudservice
-- IMAP-verbindingen en SMTP-verkeer gebruiken TLS door configuratie
-- De beheerinterface van Stalwart wordt niet publiek gepubliceerd
-- De tfwbmail-SQLitegegevensmap wordt door `.htaccess`/Docker omheining afgeschermd
-- HTML-mail wordt opgeschoond; scripts en actieve embed-content worden niet uitgevoerd
-- Docker gebruikt `no-new-privileges`
-- Gebruik HTTPS voor internettoegang
-- Zorg voor firewall, updates, sterke wachtwoorden en back-uphersteltests
-
-## Back-up
-
-Windows back-up:
+Native Windows backup:
 
 ```powershell
-Copy-Item tfwbmail\data\tbmail.sqlite "$env:USERPROFILE\Backups\tbmail.sqlite"
-Copy-Item tfwbmail\data\.key "$env:USERPROFILE\Backups\tfwbmail.key"
+$backup = "$env:USERPROFILE\Backups\tfwbmail"
+New-Item -ItemType Directory -Force -Path $backup | Out-Null
+Copy-Item "$env:LOCALAPPDATA\tfwbmail\tfwbmail-native.sqlite" `
+  "$backup\tfwbmail-native.sqlite"
 ```
 
-Bewaar beide bestanden op een versleutelde, beveiligde back-uplocatie.
+Store the backup on an encrypted, trusted and restorable location. Test the
+backup on another Windows profile or system before relying on it.
 
-Docker-volume-back-up:
+Do not copy the database while tfwbmail is actively writing to it.
+
+Docker backup:
 
 ```sh
 docker run --rm \
@@ -236,79 +306,75 @@ docker run --rm \
 
 ## Troubleshooting
 
-### IMAP-verbindingsfout
+### IMAP connection fails
 
-- Controleer hostnaam, poort en SSL/STARTTLS;
-- gebruik het volledige e-mailadres;
-- probeer een app-wachtwoord;
-- controleer firewall en provideraccountblokkade;
-- activeer of installeer de PHP `imap`-extensie.
+- verify the hostname and port;
+- use `993` with SSL/TLS for normal IMAP;
+- use the full email address as username;
+- try an app password;
+- verify that MFA/provider security settings allow the login;
+- check firewall and internet filtering.
 
-### SQLite `could not find driver`
+### SMTP sending fails
 
-Laad bij Windows-PHP samen:
+- verify the SMTP hostname;
+- try port `587` with STARTTLS;
+- try port `465` with implicit TLS;
+- verify account and app-password policy;
+- verify provider or server rate limits.
 
-```text
-php_pdo_sqlite.dll
-php_sqlite3.dll
-php_imap.dll
-php_openssl.dll
-php_mbstring.dll
-```
+### Messages do not appear
 
-De meegeleverde `start-tfwbmail.bat` en EXE zoeken automatisch naar een
-PHP-runtime met deze modules.
+- verify that the account is active;
+- refresh the selected folder;
+- check provider folder names;
+- providers may name sent, junk and trash folders differently;
+- verify that the account has the required IMAP permissions.
 
-### Berichten verschijnen niet
+### Windows reports a Smart App Control warning
 
-- controleer provideraccount en mapnamen;
-- log opnieuw in;
-- controleer internetverbinding;
-- laad inbox opnieuw;
-- IMAP-mapping kan `Sent`, `Junk` of `Trash` anders noemen.
+Windows may block a locally built executable. Verify the downloaded SHA-256
+hash before running it. Distribution to organizations should use signing and
+a trusted software-release process.
 
-### De EXE wordt geblokkeerd
+## Release integrity
 
-Windows Smart App Control of antivirusbeleid kan een lokaal gebouwd EXE
-blokkeer. Controleer alleen de SHA-256 en signeer of packageer de EXE voor
-organisatiebrede distributie in een vertrouwde uitgifteomgeving.
-
-## Ontwikkelen
-
-Windows-EXE bouwen:
-
-```sh
-dotnet publish tfwbmail-native/tfwbmail-native.csproj -c Release -r win-x64 `
-  --self-contained true `
-  -p:PublishSingleFile=true `
-  -p:IncludeNativeLibrariesForSelfExtract=true `
-  -o tfwbmail-native/publish
-```
-
-## Release
-
-Versie 1.100.2:
+Release:
 
 <https://github.com/tureluur-ux/tfwb-mail/releases/tag/v1.100.2>
 
-Het Windows-EXE-asset is beschikbaar via de release:
+Executable:
 
 <https://github.com/tureluur-ux/tfwb-mail/releases/download/v1.100.2/tfwbmail.exe>
 
-### SHA-256-integriteit
-
-Controleer het gedownloade EXE-bestand:
+Verify the downloaded file:
 
 ```powershell
 Get-FileHash .\tfwbmail.exe -Algorithm SHA256
 ```
 
-Officiële v1.100.2-hash:
+Official v1.100.2 SHA-256:
 
 ```text
 FAA69B35C032F7E3BACFBEE319C644B3CEFB1D58ED13E455B8521575AFECB597
 ```
 
-## Licentie
+## Security boundaries
 
-MIT — zie `LICENSE`.
+tfwbmail is not an email-server appliance and does not replace DNS, provider,
+TLS or SMTP reputation configuration.
+
+Important operator responsibilities:
+
+- keep Windows, .NET and mail providers updated;
+- use strong unique passwords;
+- use app passwords when required;
+- keep the local database and backups private;
+- use only trusted mail servers and DNS providers;
+- test spam, SPF, DKIM and DMARC behavior;
+- monitor Stalwart and Docker logs;
+- maintain an exit and restore plan.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
