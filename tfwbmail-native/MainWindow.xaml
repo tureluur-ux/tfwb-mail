@@ -1,0 +1,89 @@
+<Window x:Class="TfwbMail.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="tfwbmail" Width="1280" Height="800"
+        MinWidth="960" MinHeight="620"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource PanelBrush}"
+        Foreground="{StaticResource TextBrush}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="NavColumn" Width="220"/>
+            <ColumnDefinition Width="360"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="#0B1220" Padding="16">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="tfwbmail" FontSize="22" FontWeight="SemiBold" Margin="4,4,4,20"/>
+                    <Button x:Name="ComposeButton" Content="+ Nieuw bericht" Height="42"
+                            Background="{StaticResource AccentBrush}" Foreground="White"
+                            BorderThickness="0" Click="ComposeClick" Margin="0,0,0,16"/>
+                    <Button Content="Inkomend" Style="{StaticResource NavButton}" Tag="INBOX" Click="FolderClick"/>
+                    <Button Content="Verzonden" Style="{StaticResource NavButton}" Tag="Sent" Click="FolderClick"/>
+                    <Button Content="Concepten" Style="{StaticResource NavButton}" Tag="Drafts" Click="FolderClick"/>
+                    <Button Content="Prullenbak" Style="{StaticResource NavButton}" Tag="Trash" Click="FolderClick"/>
+                </StackPanel>
+                <Button DockPanel.Dock="Bottom" Content="Accountinstellingen"
+                        Style="{StaticResource NavButton}" Click="SettingsClick"/>
+            </DockPanel>
+        </Border>
+
+        <Border Grid.Column="1" Background="#111827" BorderBrush="#263244" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <TextBox x:Name="SearchBox" Height="38" Margin="12"
+                         Background="#1F2937" Foreground="White"
+                         BorderThickness="0" Padding="10,8" TextChanged="SearchChanged"/>
+                <ProgressBar x:Name="LoadingBar" DockPanel.Dock="Top" Height="3"
+                             IsIndeterminate="True" Visibility="Collapsed"/>
+                <ListBox x:Name="MessageList" Background="Transparent" BorderThickness="0"
+                         SelectionChanged="MessageSelected">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="12,10" BorderBrush="#263244" BorderThickness="0,0,0,1">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Sender}" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Subject}" Margin="0,4,0,0"/>
+                                    <TextBlock Text="{Binding Preview}" Foreground="#94A3B8"
+                                               TextTrimming="CharacterEllipsis" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <Border Grid.Column="2" Background="#F8FAFC" Padding="24">
+            <DockPanel>
+                <StackPanel x:Name="ReaderActions" DockPanel.Dock="Top" Orientation="Horizontal"
+                            HorizontalAlignment="Right" Margin="0,0,0,12">
+                    <Button Content="Beantwoorden" Width="110" Height="34" Click="ReplyClick"/>
+                    <Button Content="Verwijderen" Width="110" Height="34" Margin="8,0,0,0" Click="DeleteClick"/>
+                </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock x:Name="ReadSubject" FontSize="24" FontWeight="SemiBold"
+                                   Foreground="#0F172A" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="ReadSender" Foreground="#64748B" Margin="0,8,0,16"/>
+                        <TextBox x:Name="ReadBody" IsReadOnly="True" BorderThickness="0"
+                                 TextWrapping="Wrap" AcceptsReturn="True"
+                                 Background="Transparent" Foreground="#1E293B"
+                                 VerticalScrollBarVisibility="Auto"/>
+                        <StackPanel x:Name="ComposePanel" Visibility="Collapsed" Margin="0,8,0,0">
+                            <TextBox x:Name="ToBox" Height="38" Margin="0,0,0,8" Padding="8"/>
+                            <TextBox x:Name="SubjectBox" Height="38" Margin="0,0,0,8" Padding="8"/>
+                            <TextBox x:Name="BodyBox" MinHeight="300" AcceptsReturn="True"
+                                     TextWrapping="Wrap" Padding="10"/>
+                            <Button Content="Verzenden" Width="120" Height="38"
+                                    Margin="0,10,0,0" HorizontalAlignment="Right"
+                                    Background="{StaticResource AccentBrush}" Foreground="White"
+                                    BorderThickness="0" Click="SendClick"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

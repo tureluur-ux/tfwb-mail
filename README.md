@@ -33,27 +33,20 @@ autoconfiguratieservice.
 
 ## Windows-snelstart
 
+### Native desktopversie
+
+De Windowsversie is een echte native WPF-desktopapp. PHP, XAMPP, Apache,
+localhost-webservers en een WebView2-browservenster worden niet gebruikt.
+De EXE verbindt direct via IMAP/SMTP met MailKit en bewaart het account lokaal
+met SQLite en Windows DPAPI.
+
 Download de EXE uit [release v1.100.2](https://github.com/tureluur-ux/tfwb-mail/releases/tag/v1.100.2)
 en dubbelklik op `tfwbmail.exe`.
 
-De launcher is een echte Windows-desktopapp. Het mailvenster opent niet als
-los browservenster: de lokale webinterface wordt in een ingebouwd WebView2-
-venster getoond.
-
-1. controleert of PHP met IMAP/SQLite en WebView2 al geïnstalleerd zijn;
-2. toont bij ontbrekende onderdelen een installatie-widget met **Installeren**
-   of **Annuleren**;
-3. voert WinGet alleen uit nadat je op **Installeren** hebt geklikt;
-4. start de lokale mailservice op `127.0.0.1:8090`;
-5. opent één eigen tfwbmail-appvenster.
-
-De eerste start vereist Microsoft Edge WebView2 Runtime, die op recente
-Windows 10/11-installaties meestal al aanwezig is. Als Windows die runtime
-mist, installeer dan de officiële WebView2 Runtime en start de EXE opnieuw.
-
-De batchstarter blijft beschikbaar voor diagnose en ontwikkelaars:
-
-<http://127.0.0.1:8090>
+De launcher is een echte native WPF-desktopapp. Er is geen PHP, XAMPP, Apache,
+WebView2, browservenster of localhostserver nodig. IMAP/SMTP wordt via MailKit
+direct geopend en lokale accountgegevens worden met SQLite en Windows DPAPI
+beschermd.
 
 Alternatief vanuit de repository:
 
@@ -282,29 +275,14 @@ organisatiebrede distributie in een vertrouwde uitgifteomgeving.
 
 ## Ontwikkelen
 
-PHP-syntaxcontrole:
-
-```sh
-Get-ChildItem -Recurse -Filter *.php tfwbmail |
-  ForEach-Object { php -l $_.FullName }
-```
-
-JavaScript-syntaxcontrole:
-
-```sh
-node --check tfwbmail/assets/app.js
-node --check tfwbmail/assets/calendar.js
-node --check tfwbmail/assets/contacts.js
-```
-
 Windows-EXE bouwen:
 
 ```sh
-dotnet publish tfwbmail/launcher.csproj -c Release -r win-x64 `
+dotnet publish tfwbmail-native/tfwbmail-native.csproj -c Release -r win-x64 `
   --self-contained true `
   -p:PublishSingleFile=true `
   -p:IncludeNativeLibrariesForSelfExtract=true `
-  -o tfwbmail/downloads
+  -o tfwbmail-native/publish
 ```
 
 ## Release
@@ -328,7 +306,7 @@ Get-FileHash .\tfwbmail.exe -Algorithm SHA256
 Officiële v1.100.2-hash:
 
 ```text
-F72D71FF5573E24912D05E4509FF1CDED576BD31589BB08A589CACD69974AA5A
+0F3DA76E044C250CD9D41EDDAA5BEE6FFB46D2E4F8A2F255E7954C3E1875E3F7
 ```
 
 ## Licentie

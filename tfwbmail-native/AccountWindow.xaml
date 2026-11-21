@@ -1,0 +1,30 @@
+<Window x:Class="TfwbMail.AccountWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="tfwbmail - Account" Width="520" Height="620"
+        ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+        Background="#111827" Foreground="White">
+    <StackPanel Margin="28">
+        <TextBlock Text="E-mailaccount" FontSize="24" FontWeight="SemiBold"/>
+        <TextBlock Text="tfwbmail blijft lokaal. Het wachtwoord wordt met Windows DPAPI beschermd."
+                   Foreground="#94A3B8" Margin="0,8,0,22" TextWrapping="Wrap"/>
+        <TextBlock Text="Naam"/>
+        <TextBox x:Name="NameBox" Height="38" Margin="0,6,0,12"/>
+        <TextBlock Text="E-mailadres"/>
+        <TextBox x:Name="EmailBox" Height="38" Margin="0,6,0,12"/>
+        <TextBlock Text="Wachtwoord"/>
+        <PasswordBox x:Name="PasswordBox" Height="38" Margin="0,6,0,12"/>
+        <TextBlock Text="IMAP-server"/>
+        <TextBox x:Name="ImapHostBox" Height="38" Margin="0,6,0,12"/>
+        <TextBlock Text="IMAP-poort"/>
+        <TextBox x:Name="ImapPortBox" Height="38" Margin="0,6,0,12" Text="993"/>
+        <TextBlock Text="SMTP-server"/>
+        <TextBox x:Name="SmtpHostBox" Height="38" Margin="0,6,0,12"/>
+        <TextBlock Text="SMTP-poort"/>
+        <TextBox x:Name="SmtpPortBox" Height="38" Margin="0,6,0,12" Text="465"/>
+        <Button x:Name="SaveButton" Content="Controleren en opslaan" Height="42"
+                Margin="0,14,0,0" Background="#315BEA" Foreground="White"
+                BorderThickness="0" Click="SaveClick"/>
+        <TextBlock x:Name="StatusText" Margin="0,12,0,0" TextWrapping="Wrap"/>
+    </StackPanel>
+</Window>
